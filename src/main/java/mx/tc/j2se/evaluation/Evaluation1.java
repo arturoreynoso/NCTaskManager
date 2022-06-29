@@ -1,5 +1,4 @@
 package mx.tc.j2se.evaluation;
-
 /**
  * <p>Class for Evaluation 1.</p>
  *
@@ -14,6 +13,11 @@ package mx.tc.j2se.evaluation;
  */
 public class Evaluation1 {
 
+    /**
+     * Returns the index of the largest circle in an array.
+     * @param circles an array of circles.
+     * @return the index of the largest circle in the array.
+     */
     public static int biggestCircle(Circle[] circles) {
         double biggestArea = 0;
         int indexOfLargest = 0;
