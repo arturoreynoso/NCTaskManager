@@ -1,5 +1,4 @@
 package mx.tc.j2se.tasks;
-
 /**
  * <p>Class for tasks that a user can create, non repetitive and repetitive.</p>
  *
@@ -7,7 +6,7 @@ package mx.tc.j2se.tasks;
  * end time, tell if it's repetitive or not. In the case of a repetitive task,
  * the class provides a method to set and return the interval of the repetition.</p>
  *
- * @version     2.0 27  June 2022
+ * @version     3.0 1 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class TaskImpl implements Task {
@@ -35,8 +34,20 @@ public class TaskImpl implements Task {
     /* Empty constructor. */
     public TaskImpl() {}
 
-    /* Constructor for non-repetitive tasks. */
+    /**
+     * Constructor for non-repetitive tasks.
+     * @throws IllegalArgumentException if title is not a
+     *         String or has zero length or time is negative.
+     */
+
     TaskImpl(String title, int time) {
+        if (!(title instanceof String) || !(title.length()>0)) {
+            throw new IllegalArgumentException("title must be a String with length positive");
+        }
+
+        if (time <= 0) {
+            throw new IllegalArgumentException("time must be positive");
+        }
         this.title = title;
         this.start = time;
         this.active = false;
@@ -44,8 +55,23 @@ public class TaskImpl implements Task {
         this.end = time;
     }
 
-    /* Constructor for repetitive tasks. */
+    /**
+     * Constructor for repetitive tasks.
+     * @throws IllegalArgumentException if i) title is not a
+     *         String or has zero length, ii) start is negative,
+     *         iii) end is not greater than start, iv) interval
+     *         is not positive.
+     */
     TaskImpl(String title, int start, int end, int interval) {
+        if (!(title instanceof String) || !(title.length()>0)) {
+            throw new IllegalArgumentException("title must be a String with length positive.");
+        } else if (start < 0) {
+            throw new IllegalArgumentException("start must be non-negative.");
+        } else if (end <= start) {
+            throw new IllegalArgumentException("end must be greater than start.");
+        } else if (interval <= 0) {
+            throw new IllegalArgumentException("interval must be positive.");
+        }
         this.title = title;
         this.start = start;
         this.end = end;
@@ -81,6 +107,9 @@ public class TaskImpl implements Task {
 
     @Override
     public void setTime(int time) {
+        if (time < 0) {
+            throw new IllegalArgumentException("time must not be negative.");
+        }
         if (this.repeated) {
             this.repeated = false;
         }
@@ -105,6 +134,13 @@ public class TaskImpl implements Task {
 
     @Override
     public void setTime(int start, int end, int interval) {
+        if (start < 0) {
+            throw new IllegalArgumentException("start must be positive.");
+        } else if (end <= start) {
+            throw new IllegalArgumentException("end must be greater than start.");
+        } else if (!(interval > 0)) {
+            throw new IllegalArgumentException("interval must be positive.");
+        }
         if (!this.repeated) {
             this.repeated = true;
         }
@@ -120,6 +156,9 @@ public class TaskImpl implements Task {
 
     @Override
     public int nextTimeAfter(int current) {
+        if (current < 0) {
+            throw new IllegalArgumentException("current must not be negative.");
+        }
         if ((!this.active) || (current > this.end)) {
             return -1;
         }

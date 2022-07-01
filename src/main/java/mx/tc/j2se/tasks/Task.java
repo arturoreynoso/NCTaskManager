@@ -1,5 +1,4 @@
 package mx.tc.j2se.tasks;
-
 /**
  * <p>Interface for tasks that a user can create, non repetitive and repetitive.</p>
  *
@@ -7,7 +6,7 @@ package mx.tc.j2se.tasks;
  * end time, tell if it's repetitive or not. In the case of a repetitive task,
  * the interface declares a method to set and return the interval of the repetition.</p>
  *
- * @version     2.0 27  June 2022
+ * @version     3.0 1 June 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public interface Task {
@@ -18,7 +17,9 @@ public interface Task {
     String getTitle();
 
     /** Defines the title of the task.
-     * @param title the title of the task
+     * @param  title the title of the task
+     * @throws IllegalArgumentException if title is not a string
+     * or has zero length.
      */
     void setTitle(String title);
 
@@ -30,6 +31,8 @@ public interface Task {
     /** Defines the state of the task, either active
      * or not.
      * @param active if the task is active.
+     * @throws IllegalArgumentException if <code>active</> is not an
+     * instance of boolean.
      */
     void setActive(boolean active);
 
@@ -44,6 +47,7 @@ public interface Task {
      * If the task is repetitive, it set it to
      * non-repetitive and then sets its execution time.
      * @param time the time of execution.
+     * @throws IllegalArgumentException if time is negative.
      */
     void setTime(int time);
 
@@ -78,6 +82,9 @@ public interface Task {
      * @param start the start time.
      * @param end the end time.
      * @param interval the interval.
+     * @throws IllegalArgumentException if i) start is negative,
+     *         ii) start is greater or equal than end or
+     *         iii) or interval is not positive.
      */
     void setTime(int start, int end, int interval);
 
@@ -101,6 +108,7 @@ public interface Task {
      * it returns the time of the next repetition, or ii) current time is equal or after
      * the last repetition, it returns -1.<br>
      * @return the time of the next task (repetition) or -1 otherwise.
+     * @throws IllegalArgumentException if current is negative.
      */
     int nextTimeAfter(int current);
 }

@@ -7,7 +7,7 @@ package mx.tc.j2se.tasks;
  * @version     3.0 1 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
-public interface ArrayTaskList {
+public interface LinkedTaskList {
     /**
      * Adds the specified task to the list.
      * @param task a task to be added to the list.
@@ -54,5 +54,5 @@ public interface ArrayTaskList {
      *                                    (from, to) (exclusive).
      * @throws IllegalArgumentException   if from is i) negative or ii) greater or equal than to.
      */
-    ArrayTaskList incoming(int from, int to);
+    LinkedTaskList incoming(int from, int to);
 }

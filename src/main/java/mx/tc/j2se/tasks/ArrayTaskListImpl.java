@@ -1,5 +1,13 @@
 package mx.tc.j2se.tasks;
-
+/**
+ * <p>Implementation of ArrayTaskList. This implementation uses an
+ * array of tasks. if a task must be added, removed or replaced, a
+ * new array of tasks must be created, the size changed accordingly and
+ * tasks copied to the new array. </p>
+ *
+ * @version     3.0 1 July 2022
+ * @author      Arturo Yitzack Reynoso Sánchez
+ */
 public class ArrayTaskListImpl implements ArrayTaskList {
 
     /* An array of tasks */
@@ -13,8 +21,16 @@ public class ArrayTaskListImpl implements ArrayTaskList {
     /**
      * Constructor that receives an array of tasks.
      * @param taskList an array of tasks.
+     * @throws IllegalArgumentException if a task is not
+     *         an instance of Task class.
      */
     public ArrayTaskListImpl(Task[] taskList) {
+        for (int i = 0; i < taskList.length; i++) {
+            if (!(taskList[i] instanceof Task)) {
+                throw new IllegalArgumentException("The list of tasks must contain elements of " +
+                        " classes that implements interface Task.");
+            }
+        }
         this.taskList = taskList;
     }
 
@@ -24,6 +40,9 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      */
     @Override
     public void add(Task task) {
+        if (!(task instanceof Task)) {
+            throw new IllegalArgumentException("task must be an instance of Task.");
+        }
         Task[] newTaskList = new Task[taskList.length + 1];
         if (taskList.length == 0) {
             newTaskList[0] = task;
@@ -36,6 +55,9 @@ public class ArrayTaskListImpl implements ArrayTaskList {
 
     @Override
     public boolean remove(Task task) {
+        if (!(task instanceof Task)) {
+            throw new IllegalArgumentException("task must be an instance of Task.");
+        }
         for (int i = 0; i < this.taskList.length; i++) {
             if (taskList[i].equals(task)) {
                 Task[] newTaskList = new Task[taskList.length - 1];
@@ -63,11 +85,19 @@ public class ArrayTaskListImpl implements ArrayTaskList {
 
     @Override
     public Task getTask(int index) {
+        if (index < 0 || this.taskList.length <= index) {
+            throw new IllegalArgumentException("index must not exceed the permissible " +
+                    "limits for the list.");
+        }
         return this.taskList[index];
     }
 
     @Override
     public ArrayTaskList incoming(int from, int to){
+        if (from < 0  || to <= from) {
+            throw new IllegalArgumentException("from must not be negative nor greater or " +
+                    "equal than to.");
+        }
         ArrayTaskList incomingTaskList = new ArrayTaskListImpl();
         outer:
         for(Task task : this.taskList) {
