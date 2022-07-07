@@ -4,10 +4,10 @@ package mx.tc.j2se.tasks;
  * double linked list of tasks. A new private inner class <code>Node</code>
  * is created, where a node wraps a task.</p>
  *
- * @version     3.0 1 July 2022
+ * @version     4.0 6 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
-public class LinkedTaskListImpl implements LinkedTaskList{
+public class LinkedTaskListImpl extends AbstractTaskList{
 
     /* Private inner class of nodes. */
     private class Node {
@@ -31,18 +31,10 @@ public class LinkedTaskListImpl implements LinkedTaskList{
     /* Number of tasks in the list. */
     private int length;
 
-    /**
-     * Returns the length of the list.
-     * @return the length of the list, the number of elements in the list.
-     */
-
-    public int getLength() {
-        return this.length;
-    }
     @Override
     public void add(Task task) {
         if (task == null) {
-            throw new IllegalArgumentException("Cannot add a null element.");
+            throw new IllegalArgumentException("You can't add a null task.");
         }
         Node n = new Node(task);
         length++;
@@ -107,13 +99,13 @@ public class LinkedTaskListImpl implements LinkedTaskList{
     @Override
     public boolean remove(Task task) {
         if (task == null) {
-            throw new IllegalArgumentException("task can't be null.");
+            throw new IllegalArgumentException("You can't remove a null task.");
         }
-        if (getNode(task) == null) {
+        Node node = getNode(task);
+        if (node == null) {
             return false;
         }
-        Node n = getNode(task);
-        removeNode(n);
+        removeNode(node);
         return true;
     }
 
@@ -124,8 +116,11 @@ public class LinkedTaskListImpl implements LinkedTaskList{
 
     @Override
     public Task getTask(int index) {
-        if ((index < 0) || (index >= this.length)) {
-            throw new IndexOutOfBoundsException("El índice no es válido.");
+        if (index < 0) {
+            throw new IllegalArgumentException("index can't be negative.");
+        }
+        if (this.length <= index) {
+            throw new IllegalArgumentException("index can't be equal or greater than the size of the list.");
         }
         int counter = 0;
         Node n = this.head;
@@ -137,48 +132,5 @@ public class LinkedTaskListImpl implements LinkedTaskList{
             counter++;
         }
         return null;
-    }
-
-    @Override
-    public LinkedTaskList incoming(int from, int to) {
-        if (from < 0  || to <= from) {
-            throw new IllegalArgumentException("from must not be negative nor greater or " +
-                    "equal than to.");
-        }
-        LinkedTaskList incomingTaskList = new LinkedTaskListImpl();
-        Node n = this.head;
-
-        outer:
-        while (n != null) {
-            if (!n.task.isActive()) {
-                n = n.next;
-                continue;
-            }
-            if (!n.task.isRepeated() && (from < n.task.getTime() && n.task.getTime() < to)) {
-                incomingTaskList.add(n.task);
-                n = n.next;
-                continue;
-            }
-            if (n.task.isRepeated()) {
-                if (to <= n.task.getStartTime() || n.task.getEndTime() <= from) {
-                    n = n.next;
-                    continue;
-                }
-                if ((from < n.task.getStartTime()) && (n.task.getStartTime() < to)) {
-                    incomingTaskList.add(n.task);
-                    n = n.next;
-                    continue;
-                }
-                for (int i = n.task.nextTimeAfter(n.task.getStartTime()); i != -1; i = n.task.nextTimeAfter(i)) {
-                    if ((from < i) && (i < to)) {
-                        incomingTaskList.add(n.task);
-                        n = n.next;
-                        continue outer;
-                    }
-                }
-            }
-            n = n.next;
-        }
-        return incomingTaskList;
     }
 }

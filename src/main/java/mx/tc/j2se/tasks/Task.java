@@ -6,7 +6,7 @@ package mx.tc.j2se.tasks;
  * end time, tell if it's repetitive or not. In the case of a repetitive task,
  * the interface declares a method to set and return the interval of the repetition.</p>
  *
- * @version     3.0 1 June 2022
+ * @version     4.0 6 June 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public interface Task {

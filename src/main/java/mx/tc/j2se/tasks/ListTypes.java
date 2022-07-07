@@ -1,0 +1,16 @@
+package mx.tc.j2se.tasks;
+/**
+ * <p>Class that defines two implementations of lists of
+ * tasks: i) array, ii) linked.
+ * The array implementation uses an array of tasks.
+ * The linked implementation uses a double linked
+ * list of tasks.</p>
+ *
+ * @version     4.0 6 July 2022
+ * @author      Arturo Yitzack Reynoso Sánchez
+ */
+public class ListTypes {
+    enum types {
+        ARRAY, LINKED
+    }
+}

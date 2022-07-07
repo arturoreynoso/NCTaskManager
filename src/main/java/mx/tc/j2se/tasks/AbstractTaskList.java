@@ -1,19 +1,19 @@
 package mx.tc.j2se.tasks;
 /**
- * <p>Interface for lists of tasks. Tasks in the list can be repeated, the
+ * <p>Abstract class for lists of tasks. Tasks in the list can be repeated, the
  * order of the tasks does not matter, with operations for delete, add,
  * get the size and get a task by index. </p>
  *
- * @version     3.0 1 July 2022
+ * @version     4.0 6 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
-public interface ArrayTaskList {
+public abstract class AbstractTaskList {
     /**
      * Adds the specified task to the list.
      * @param task a task to be added to the list.
-     * @throws IllegalArgumentException if task is not an instance of Task interface.
+     * @throws IllegalArgumentException if task is null.
      */
-    void add(Task task);
+    abstract void add(Task task);
 
     /**
      * Removes a task from the list and returns true if such a task was
@@ -22,15 +22,15 @@ public interface ArrayTaskList {
      * @param task a task to be removed from the list.
      * @return <code>true</code> if the list contains the task, else
      *         returns <code>false</code>.
-     * @throws IllegalArgumentException if task is not an instance of Task interface.
+     * @throws IllegalArgumentException if task is null.
      */
-    boolean remove(Task task);
+    abstract boolean remove(Task task);
 
     /**
      * Returns the number of tasks in the list.
      * @return the size of the list, the number of elements it contains.
      */
-    int size();
+    abstract int size();
 
     /**
      * Returns the task in the list at the specified index.
@@ -39,7 +39,7 @@ public interface ArrayTaskList {
      * @throws IndexOutOfBoundsException if index is negative or
      *         greater or equal than the number of tasks in the list.
      */
-    Task getTask(int index);
+    abstract Task getTask(int index);
 
     /**
      * Returns a list of tasks whose: i) execution time is contained
@@ -54,5 +54,39 @@ public interface ArrayTaskList {
      *                                    (from, to) (exclusive).
      * @throws IllegalArgumentException   if from is i) negative or ii) greater or equal than to.
      */
-    ArrayTaskList incoming(int from, int to);
+    AbstractTaskList incoming(int from, int to) {
+        if (from < 0) {
+            throw new IllegalArgumentException("'from' must be zero or positive.");
+        }
+        if (to <= from) {
+            throw new IllegalArgumentException("'from' must be less than 'to'.");
+        }
+
+        AbstractTaskList incomingTaskList = null;
+
+        /* Creating incomingTaskList based on the child class implementing it. */
+        if (this instanceof ArrayTaskListImpl) {
+            incomingTaskList = new ArrayTaskListImpl();
+        } else if (this instanceof LinkedTaskListImpl) {
+            incomingTaskList = new LinkedTaskListImpl();
+        }
+
+        outer:
+        for (int i = 0; i < this.size(); i++) {
+            Task task = this.getTask(i);
+            if (task.nextTimeAfter(0) == -1) {
+                continue;
+            } else {
+                int repetition = task.nextTimeAfter(0);
+                while (repetition > 0) {
+                    if ((from < repetition) && (repetition < to)) {
+                        incomingTaskList.add(task);
+                        continue outer;
+                    }
+                    repetition = task.nextTimeAfter(repetition);
+                }
+            }
+        }
+        return incomingTaskList;
+    }
 }

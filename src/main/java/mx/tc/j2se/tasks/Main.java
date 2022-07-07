@@ -19,36 +19,35 @@ public class Main {
 		Task task5 = new TaskImpl("Ver juego", 678);
 		task5.setActive(true);
 
-		/*ArrayTaskList taskList= new ArrayTaskListImpl();
+		AbstractTaskList taskList = TaskListFactory.createTaskList(ListTypes.types.ARRAY);
 		taskList.add(task);
 		taskList.add(task2);
 		taskList.add(task3);
 		taskList.add(task4);
 		taskList.add(task5);
 
-		taskList.remove(taskList.getTask(5));
-		System.out.println(taskList.size());
-		//System.out.println(taskList.getTask(1).getTitle());
+		for (int i = 0; i < taskList.incoming(56, 60).size(); i++) {
+			System.out.println(taskList.incoming(56,60).getTask(i).getTitle());
+		}
 
-		for (int i = 0; i < taskList.size(); i++) {
-			System.out.println(taskList.getTask(i).getTitle());
-		}*/
-
-		LinkedTaskList taskList2 = new LinkedTaskListImpl();
+		AbstractTaskList taskList2 = TaskListFactory.createTaskList(ListTypes.types.LINKED);
 		taskList2.add(task);
 		taskList2.add(task2);
 		taskList2.add(task3);
 		taskList2.add(task4);
 		taskList2.add(task5);
+		//taskList2.add(null);
 
-		//taskList2.remove(taskList2.getTask(4));
-		//System.out.println(taskList2.size());
+
+		taskList2.remove(taskList2.getTask(4));
+		System.out.println(taskList2.size());
+		taskList2.remove(null);
 		//System.out.println(taskList2.getTask(1).getTitle());
 		//System.out.println(taskList2.incoming(56,60));
 
-		for (int i = 0; i < taskList2.incoming(56, 60).size(); i++) {
-			System.out.println(taskList2.getTask(i).getTitle());
-		}
+		/*for (int i = 0; i < taskList2.incoming(56, 60).size(); i++) {
+			System.out.println(taskList2.incoming(56,60).getTask(i).getTitle());
+		}*/
 	}
 }
 

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LinkedTaskListTest {
     @Test
     void testArrayTaskListSize() {
-        LinkedTaskList taskList = new LinkedTaskListImpl();
+        AbstractTaskList taskList = new LinkedTaskListImpl();
         Task task = new TaskImpl("Correr por las mañanas a las 9:00 a.m.", 9, 180, 24);
         task.setActive(true);
 

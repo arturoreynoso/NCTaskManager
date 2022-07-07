@@ -5,11 +5,10 @@ package mx.tc.j2se.tasks;
  * new array of tasks must be created, the size changed accordingly and
  * tasks copied to the new array. </p>
  *
- * @version     3.0 1 July 2022
+ * @version     4.0 6 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
-public class ArrayTaskListImpl implements ArrayTaskList {
-
+public class ArrayTaskListImpl extends AbstractTaskList {
     /* An array of tasks */
     Task[] taskList;
 
@@ -26,9 +25,9 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      */
     public ArrayTaskListImpl(Task[] taskList) {
         for (int i = 0; i < taskList.length; i++) {
-            if (!(taskList[i] instanceof Task)) {
-                throw new IllegalArgumentException("The list of tasks must contain elements of " +
-                        " classes that implements interface Task.");
+            if (taskList[i] == null) {
+                String message = String.format("taskList[%d] is null. Tasks in the list can not be null!", i);
+                throw new IllegalArgumentException(message);
             }
         }
         this.taskList = taskList;
@@ -40,8 +39,8 @@ public class ArrayTaskListImpl implements ArrayTaskList {
      */
     @Override
     public void add(Task task) {
-        if (!(task instanceof Task)) {
-            throw new IllegalArgumentException("task must be an instance of Task.");
+        if (task == null) {
+            throw new IllegalArgumentException("You can't add a null task.");
         }
         Task[] newTaskList = new Task[taskList.length + 1];
         if (taskList.length == 0) {
@@ -55,8 +54,8 @@ public class ArrayTaskListImpl implements ArrayTaskList {
 
     @Override
     public boolean remove(Task task) {
-        if (!(task instanceof Task)) {
-            throw new IllegalArgumentException("task must be an instance of Task.");
+        if (task == null) {
+            throw new IllegalArgumentException("You can't remove a null task.");
         }
         for (int i = 0; i < this.taskList.length; i++) {
             if (taskList[i].equals(task)) {
@@ -85,47 +84,12 @@ public class ArrayTaskListImpl implements ArrayTaskList {
 
     @Override
     public Task getTask(int index) {
-        if (index < 0 || this.taskList.length <= index) {
-            throw new IllegalArgumentException("index must not exceed the permissible " +
-                    "limits for the list.");
+        if (index < 0) {
+            throw new IllegalArgumentException("index can't be negative!");
+        }
+        if (this.taskList.length <= index) {
+            throw new IllegalArgumentException("index can't be equal or greater than the size of the list.");
         }
         return this.taskList[index];
-    }
-
-    @Override
-    public ArrayTaskList incoming(int from, int to){
-        if (from < 0  || to <= from) {
-            throw new IllegalArgumentException("from must not be negative nor greater or " +
-                    "equal than to.");
-        }
-        ArrayTaskList incomingTaskList = new ArrayTaskListImpl();
-        outer:
-        for(Task task : this.taskList) {
-            if(!task.isActive()) {
-                continue;
-            }
-            if (!task.isRepeated() && (from < task.getTime() && task.getTime() < to)) {
-                incomingTaskList.add(task);
-                continue;
-            }
-
-            if (task.isRepeated()) {
-                if (to <= task.getStartTime() || task.getEndTime() <= from) {
-                    continue;
-                }
-                if ((from < task.getStartTime()) && (task.getStartTime() < to)) {
-                    incomingTaskList.add(task);
-                    continue;
-                }
-
-                for (int i = task.nextTimeAfter(task.getStartTime()); i != -1; i = task.nextTimeAfter(i)){
-                    if ((from < i) && (i < to)) {
-                        incomingTaskList.add(task);
-                        continue outer;
-                    }
-                }
-            }
-        }
-        return incomingTaskList;
     }
 }

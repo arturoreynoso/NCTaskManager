@@ -6,7 +6,7 @@ package mx.tc.j2se.tasks;
  * end time, tell if it's repetitive or not. In the case of a repetitive task,
  * the class provides a method to set and return the interval of the repetition.</p>
  *
- * @version     3.0 1 July 2022
+ * @version     4.0 6 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class TaskImpl implements Task {
@@ -41,7 +41,7 @@ public class TaskImpl implements Task {
      */
 
     TaskImpl(String title, int time) {
-        if (!(title instanceof String) || !(title.length()>0)) {
+        if ((title == null) || !(title.length()>0)) {
             throw new IllegalArgumentException("title must be a String with length positive");
         }
 
@@ -63,13 +63,19 @@ public class TaskImpl implements Task {
      *         is not positive.
      */
     TaskImpl(String title, int start, int end, int interval) {
-        if (!(title instanceof String) || !(title.length()>0)) {
-            throw new IllegalArgumentException("title must be a String with length positive.");
-        } else if (start < 0) {
+        if (title == null) {
+            throw new IllegalArgumentException("title can't be null.");
+        }
+        if (title.isEmpty()) {
+            throw new IllegalArgumentException("title can't be empty.");
+        }
+        if (start < 0) {
             throw new IllegalArgumentException("start must be non-negative.");
-        } else if (end <= start) {
+        }
+        if (end <= start) {
             throw new IllegalArgumentException("end must be greater than start.");
-        } else if (interval <= 0) {
+        }
+        if (interval <= 0) {
             throw new IllegalArgumentException("interval must be positive.");
         }
         this.title = title;
