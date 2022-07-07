@@ -41,8 +41,11 @@ public class TaskImpl implements Task {
      */
 
     TaskImpl(String title, int time) {
-        if ((title == null) || !(title.length()>0)) {
-            throw new IllegalArgumentException("title must be a String with length positive");
+        if (title == null) {
+            throw new IllegalArgumentException("title can't be null.");
+        }
+        if (title.isEmpty()) {
+            throw new IllegalArgumentException("title can't be empty.");
         }
 
         if (time <= 0) {
