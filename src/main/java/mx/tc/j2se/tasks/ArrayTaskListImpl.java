@@ -1,11 +1,16 @@
 package mx.tc.j2se.tasks;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
- * <p>Implementation of ArrayTaskList. This implementation uses an
+ * <p>Implementation of AbstractTaskList. This implementation uses an
  * array of tasks. if a task must be added, removed or replaced, a
  * new array of tasks must be created, the size changed accordingly and
- * tasks copied to the new array. </p>
+ * tasks copied to the new array. Objects of this class can be cloned.</p>
  *
- * @version     4.0 6 July 2022
+ * @version     5.0 12 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class ArrayTaskListImpl extends AbstractTaskList {
@@ -31,6 +36,36 @@ public class ArrayTaskListImpl extends AbstractTaskList {
             }
         }
         this.taskList = taskList;
+    }
+
+    /* Inner private class for iterators. */
+    private class Iterador implements Iterator<Task> {
+
+        /* Index of the iterator. */
+        private int index;
+
+        /* Indicates if there is a next task. */
+        @Override public boolean hasNext() {
+            return index < size();
+        }
+
+        /* Returns the next task. */
+        @Override public Task next() {
+            if (index >= size()) {
+                throw new NoSuchElementException();
+            }
+            index += 1;
+            return taskList[index-1];
+        }
+
+    }
+
+    /**
+     * Returns an iterator to iterate the array of tasks.
+     * @return an iterator to iterate the array of tasks.
+     */
+    @Override public Iterator<Task> iterator() {
+        return new Iterador();
     }
 
     /**
@@ -91,5 +126,47 @@ public class ArrayTaskListImpl extends AbstractTaskList {
             throw new IllegalArgumentException("index can't be equal or greater than the size of the list.");
         }
         return this.taskList[index];
+    }
+
+
+    @Override
+    public AbstractTaskList clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    /**
+     * Returns a string representation of the array of tasks.
+     * @return a string representation of the array of tasks.
+     */
+    @Override
+    public String toString() {
+        return Arrays.toString(taskList);
+    }
+
+    /**
+     * Compares the object received with this array for equality.
+     * @param o the object to compare.
+     * @return <code>true</code> if the array is equal to the object received;
+     *         <code>false</code> in other case.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof ArrayTaskListImpl)) {
+            return false;
+        }
+        ArrayTaskListImpl tasks = (ArrayTaskListImpl) o;
+        return Arrays.equals(taskList, tasks.taskList);
+    }
+
+    /**
+     * Returns the hash code value for this array of tasks.
+     * @return the hash code value for this array of tasks.
+     */
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(taskList);
     }
 }

@@ -1,7 +1,7 @@
 package mx.tc.j2se.tasks;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CloneNotSupportedException {
 		//System.out.println("Hello Training Center!");
 
 		Task task = new TaskImpl("Trotar por las mañanas", 9, 180, 24);
@@ -26,24 +26,28 @@ public class Main {
 		taskList.add(task4);
 		taskList.add(task5);
 
-		for (int i = 0; i < taskList.incoming(56, 60).size(); i++) {
-			System.out.println(taskList.incoming(56,60).getTask(i).getTitle());
-		}
+		AbstractTaskList taskList1 = TaskListFactory.createTaskList(ListTypes.types.ARRAY);
+		taskList1.add(task);
+		taskList1.add(task2);
+		taskList1.add(task3);
+		taskList1.add(task4);
+		taskList1.add(task5);
 
-		AbstractTaskList taskList2 = TaskListFactory.createTaskList(ListTypes.types.LINKED);
-		taskList2.add(task);
-		taskList2.add(task2);
-		taskList2.add(task3);
-		taskList2.add(task4);
-		taskList2.add(task5);
-		//taskList2.add(null);
+		AbstractTaskList taskList2 = taskList1.clone();
 
+		Task task6 = task5.clone();
+		System.out.println(task5);
+		System.out.println(task6);
 
-		taskList2.remove(taskList2.getTask(4));
-		System.out.println(taskList2.size());
-		taskList2.remove(null);
+		System.out.println(taskList1.equals(taskList2));
+		System.out.println(taskList1.hashCode());
+		System.out.println(taskList2.hashCode());
+		System.out.println(taskList1);
+		System.out.println(taskList2);
+		System.out.println(taskList2.getTask(3));
+
 		//System.out.println(taskList2.getTask(1).getTitle());
-		//System.out.println(taskList2.incoming(56,60));
+		System.out.println(taskList2.incoming(20,60));
 
 		/*for (int i = 0; i < taskList2.incoming(56, 60).size(); i++) {
 			System.out.println(taskList2.incoming(56,60).getTask(i).getTitle());

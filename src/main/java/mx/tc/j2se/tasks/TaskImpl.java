@@ -6,7 +6,7 @@ package mx.tc.j2se.tasks;
  * end time, tell if it's repetitive or not. In the case of a repetitive task,
  * the class provides a method to set and return the interval of the repetition.</p>
  *
- * @version     4.0 6 July 2022
+ * @version     5.0 12 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class TaskImpl implements Task {
@@ -184,5 +184,63 @@ public class TaskImpl implements Task {
             }
         }
         return -1;
+    }
+
+    @Override
+    public Task clone() throws CloneNotSupportedException {
+        return (TaskImpl)super.clone();
+    }
+
+    /**
+     * Returns a string representation of the task.
+     * @return a string representation of the task.
+     */
+    @Override
+    public String toString() {
+        String s;
+        if (!this.repeated) {
+            s = String.format("Non-repetitive Task: {title: %s, execution time: %d, active: %s}",
+                    this.title, this.start, this.active);
+        } else {
+            s = String.format("Repetitive Task: {title: %s, start time: %d, end time: %d, interval: %d, active: %s}",
+                    this.title, this.start, this.end, this.interval, this.active);
+        }
+        return s;
+    }
+
+    /**
+     * Compares the object received with this task.
+     * @param o the object to compare.
+     * @return <code>true</code> if the task is equal to the object received;
+     *         <code>false</code> in other case.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof TaskImpl)) {
+            return false;
+        }
+        TaskImpl task = (TaskImpl)o;
+        return task.title.equals(this.title) && task.start == this.start && task.end == this.end
+                && task.active == this.active && task.repeated == this.repeated;
+    }
+
+    /**
+     * Returns the hash code value for this task.
+     * @return the hash code value for this task.
+     */
+    @Override
+    public int hashCode() {
+        Boolean active = this.active;
+        Boolean repeated = this.repeated;
+        int result = this.title.hashCode();
+        result = 31 * result + this.start;
+        result = 31 * result + this.end;
+        result = 31 * result + this.interval;
+        result = 31 * result + active.hashCode();
+        result = 31 * result + repeated.hashCode();
+        return result;
     }
 }

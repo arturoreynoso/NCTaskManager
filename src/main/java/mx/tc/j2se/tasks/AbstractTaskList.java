@@ -1,13 +1,15 @@
 package mx.tc.j2se.tasks;
+
 /**
  * <p>Abstract class for lists of tasks. Tasks in the list can be repeated, the
  * order of the tasks does not matter, with operations for delete, add,
- * get the size and get a task by index. </p>
+ * get the size and get a task by index. Objects of concrete classes that
+ * extends this class can be cloned.</p>
  *
- * @version     4.0 6 July 2022
+ * @version     5.0 12 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
-public abstract class AbstractTaskList {
+public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
     /**
      * Adds the specified task to the list.
      * @param task a task to be added to the list.
@@ -72,21 +74,46 @@ public abstract class AbstractTaskList {
         }
 
         outer:
-        for (int i = 0; i < this.size(); i++) {
-            Task task = this.getTask(i);
-            if (task.nextTimeAfter(0) == -1) {
-                continue;
-            } else {
+        for (Task task : this) {
+            if (task.nextTimeAfter(0) > 0) {
                 int repetition = task.nextTimeAfter(0);
                 while (repetition > 0) {
                     if ((from < repetition) && (repetition < to)) {
                         incomingTaskList.add(task);
                         continue outer;
                     }
-                    repetition = task.nextTimeAfter(repetition);
+                repetition = task.nextTimeAfter(repetition);
                 }
             }
         }
         return incomingTaskList;
     }
+
+    /**
+     * Creates a shallow copy of this object.
+     * @return a clone of this object.
+     */
+    public AbstractTaskList clone() throws CloneNotSupportedException {
+        return (AbstractTaskList)super.clone();
+    }
+
+    /**
+     * Returns a string representation of the list of tasks.
+     * @return a string representation of the list of tasks.
+     */
+    public abstract String toString();
+
+    /**
+     * Compares the object received with this list of tasks for equality.
+     * @param o the object to compare.
+     * @return <code>true</code> if the list is equal to the object received;
+     *         <code>false</code> in other case.
+     */
+    public abstract boolean equals(Object o);
+
+    /**
+     * Returns the hash code value for this list of tasks.
+     * @return the hash code value for this list of tasks.
+     */
+    public abstract int hashCode();
 }
