@@ -1,8 +1,12 @@
 package mx.tc.j2se.tasks;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Arrays;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * <p>Implementation of AbstractTaskList. This implementation uses an
@@ -10,7 +14,7 @@ import java.util.NoSuchElementException;
  * new array of tasks must be created, the size changed accordingly and
  * tasks copied to the new array. Objects of this class can be cloned.</p>
  *
- * @version     5.0 12 July 2022
+ * @version     6.0 21 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class ArrayTaskListImpl extends AbstractTaskList {
@@ -29,12 +33,13 @@ public class ArrayTaskListImpl extends AbstractTaskList {
      *         an instance of Task class.
      */
     public ArrayTaskListImpl(Task[] taskList) {
-        for (int i = 0; i < taskList.length; i++) {
-            if (taskList[i] == null) {
-                String message = String.format("taskList[%d] is null. Tasks in the list can not be null!", i);
+        Stream<Task> stream = Arrays.stream(taskList);
+        stream.forEach(task -> {
+            if (task == null) {
+                String message = "A task in the list is null. Tasks in the list can not be null!";
                 throw new IllegalArgumentException(message);
             }
-        }
+        });
         this.taskList = taskList;
     }
 
@@ -92,24 +97,27 @@ public class ArrayTaskListImpl extends AbstractTaskList {
         if (task == null) {
             throw new IllegalArgumentException("You can't remove a null task.");
         }
-        for (int i = 0; i < this.taskList.length; i++) {
-            if (taskList[i].equals(task)) {
-                Task[] newTaskList = new Task[taskList.length - 1];
-                if (i == 0) {
-                    System.arraycopy(this.taskList, 1, newTaskList, 0, this.taskList.length - 1);
-                    this.taskList = newTaskList;
-                } else if (i == taskList.length - 1) {
-                    System.arraycopy(this.taskList, 0, newTaskList, 0, this.taskList.length - 1);
-                    this.taskList = newTaskList;
-                } else {
-                    System.arraycopy(this.taskList,0,newTaskList, 0, i);
-                    System.arraycopy(this.taskList,i+1,newTaskList, i, taskList.length - i - 1);
-                    this.taskList = newTaskList;
-                }
-                return true;
+        final boolean[] taskInArray = {false};
+
+        Stream<Integer> stream = Stream.iterate(0, n -> n + 1).limit(this.taskList.length -1);
+        Task[] newTaskList = new Task[taskList.length - 1];
+        stream.forEach( i -> {
+            if (taskList[i].equals(task) && i == 0) {
+                System.arraycopy(this.taskList, 1, newTaskList, 0, this.taskList.length - 1);
+                taskInArray[0] = true;
+                this.taskList = newTaskList;
+            } else if (taskList[i].equals(task) && i == taskList.length - 1) {
+                System.arraycopy(this.taskList, 0, newTaskList, 0, this.taskList.length - 1);
+                taskInArray[0] = true;
+                this.taskList = newTaskList;
+            } else if (taskList[i].equals(task)){
+                System.arraycopy(this.taskList,0,newTaskList, 0, i);
+                System.arraycopy(this.taskList,i+1,newTaskList, i, taskList.length - i - 1);
+                taskInArray[0] = true;
+                this.taskList = newTaskList;
             }
-        }
-        return false;
+        });
+        return taskInArray[0];
     }
 
     @Override
@@ -127,7 +135,6 @@ public class ArrayTaskListImpl extends AbstractTaskList {
         }
         return this.taskList[index];
     }
-
 
     @Override
     public AbstractTaskList clone() throws CloneNotSupportedException {
@@ -168,5 +175,14 @@ public class ArrayTaskListImpl extends AbstractTaskList {
     @Override
     public int hashCode() {
         return Arrays.hashCode(taskList);
+    }
+
+    public Stream<Task> getStream() {
+        Iterator<Task> iterator = this.iterator();
+        if (!iterator.hasNext()) {
+            throw new NoSuchElementException("The iterator is empty.");
+        }
+        Spliterator<Task> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+        return StreamSupport.stream(spliterator, false);
     }
 }

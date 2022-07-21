@@ -1,14 +1,17 @@
 package mx.tc.j2se.tasks;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 /**
  * <p>Implementation of AbstractTaskList. This implementation uses a
  * double linked list of tasks. Objects of this class can be cloned.
  * A private inner class <code>Node</code>
  * is created, where a node wraps a task.</p>
  *
- * @version     5.0 12 July 2022
+ * @version     6.0 21 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class LinkedTaskListImpl extends AbstractTaskList{
@@ -128,14 +131,10 @@ public class LinkedTaskListImpl extends AbstractTaskList{
      * @return the node of the parameter task.
      */
     private Node getNode(Object task) {
-        Node n = this.head;
-        while (n != null) {
-            if (n.task.equals(task)) {
-                return n;
-            }
-            n = n.next;
-        }
-        return null;
+        Optional<Node> node = Stream.iterate(this.head, n -> n.next)
+                .filter(n -> n.task == task)
+                .limit(this.length).findFirst();
+        return node.orElse(null);
     }
 
     @Override
@@ -164,16 +163,15 @@ public class LinkedTaskListImpl extends AbstractTaskList{
         if (this.length <= index) {
             throw new IllegalArgumentException("index can't be equal or greater than the size of the list.");
         }
-        int counter = 0;
-        Node n = this.head;
-        while(n != null) {
-            if (counter == index) {
-                return n.task;
-            }
-            n = n.next;
-            counter++;
+
+        Stream<Task> stream = this.getStream().limit(this.length);
+        Optional<Task> n;
+        if (index == 0) {
+            n = stream.findFirst();
+        } else {
+            n = stream.skip(index).findFirst();
         }
-        return null;
+        return n.orElse(null);
     }
 
     @Override
@@ -192,14 +190,10 @@ public class LinkedTaskListImpl extends AbstractTaskList{
             return s;
         }
 
-        Node n = this.head;
-        StringBuilder stringOfList = new StringBuilder("[" + n.task.toString());
-
-        while (n.next != null) {
-            stringOfList.append(", ").append(n.next.task.toString());
-            n = n.next;
-        }
-        return stringOfList + "]";
+        Stream<String> stream = this.getStream().map(Object::toString);
+        String stringOfList = stream.collect(Collectors.joining(", "));
+        stringOfList = "[" + stringOfList + "]";
+        return stringOfList;
     }
 
     /**
@@ -245,5 +239,14 @@ public class LinkedTaskListImpl extends AbstractTaskList{
             hashCode = 31*hashCode + (task == null ? 0 : task.hashCode());
         }
         return hashCode;
+    }
+
+    public Stream<Task> getStream() {
+        Iterator<Task> iterator = this.iterator();
+        if (!iterator.hasNext()) {
+            throw new NoSuchElementException("The iterator is empty.");
+        }
+        Spliterator<Task> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+        return StreamSupport.stream(spliterator, false);
     }
 }

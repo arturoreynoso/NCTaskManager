@@ -1,12 +1,16 @@
 package mx.tc.j2se.tasks;
 
+import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 /**
  * <p>Abstract class for lists of tasks. Tasks in the list can be repeated, the
  * order of the tasks does not matter, with operations for delete, add,
  * get the size and get a task by index. Objects of concrete classes that
  * extends this class can be cloned.</p>
  *
- * @version     5.0 12 July 2022
+ * @version     6.0 21 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
@@ -56,7 +60,7 @@ public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
      *                                    (from, to) (exclusive).
      * @throws IllegalArgumentException   if from is i) negative or ii) greater or equal than to.
      */
-    AbstractTaskList incoming(int from, int to) {
+    final AbstractTaskList incoming(int from, int to) {
         if (from < 0) {
             throw new IllegalArgumentException("'from' must be zero or positive.");
         }
@@ -73,19 +77,14 @@ public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
             incomingTaskList = new LinkedTaskListImpl();
         }
 
-        outer:
-        for (Task task : this) {
-            if (task.nextTimeAfter(0) > 0) {
-                int repetition = task.nextTimeAfter(0);
-                while (repetition > 0) {
-                    if ((from < repetition) && (repetition < to)) {
-                        incomingTaskList.add(task);
-                        continue outer;
-                    }
-                repetition = task.nextTimeAfter(repetition);
-                }
-            }
-        }
+        Stream<Task> stream = this.getStream();
+        stream.filter(task -> IntStream.iterate(task.getStartTime(), task::nextTimeAfter
+        ).limit(
+                !task.isRepeated() ?
+                        1 :
+                        (int) Math.floor((task.getEndTime() - task.getStartTime())/task.getRepeatInterval()) + 1)
+                .anyMatch(repetition -> from < repetition && repetition < to))
+                .forEach(incomingTaskList::add);
         return incomingTaskList;
     }
 
@@ -116,4 +115,10 @@ public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
      * @return the hash code value for this list of tasks.
      */
     public abstract int hashCode();
+
+    /**
+     * Returns a stream of elements of this list.
+     * @return a stream of elements of this list.
+     */
+    abstract Stream<Task> getStream();
 }
