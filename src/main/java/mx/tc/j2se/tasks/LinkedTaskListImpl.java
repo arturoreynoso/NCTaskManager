@@ -11,7 +11,7 @@ import java.util.stream.StreamSupport;
  * A private inner class <code>Node</code>
  * is created, where a node wraps a task.</p>
  *
- * @version     6.0 21 July 2022
+ * @version     7.0 30 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class LinkedTaskListImpl extends AbstractTaskList{

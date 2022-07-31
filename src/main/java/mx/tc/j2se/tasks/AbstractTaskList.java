@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * get the size and get a task by index. Objects of concrete classes that
  * extends this class can be cloned.</p>
  *
- * @version     6.0 21 July 2022
+ * @version     7.0 30 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
@@ -46,47 +46,6 @@ public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
      *         greater or equal than the number of tasks in the list.
      */
     abstract Task getTask(int index);
-
-    /**
-     * Returns a list of tasks whose: i) execution time is contained
-     * in the (from, to) range (exclusive), or ii) at least one
-     * repetition is contained in the (from, to) range (exclusive).
-     * @param from                        the lower bound (exclusive) of at least one
-     *                                    execution time of the tasks to include.
-     * @param to                          the upper bound (exclusive) of at least one
-     *                                    execution time of the tasks to include
-     * @return <code>ArrayTaskList</code> a list of tasks that have at least one
-     *                                    execution time scheduled in the range
-     *                                    (from, to) (exclusive).
-     * @throws IllegalArgumentException   if from is i) negative or ii) greater or equal than to.
-     */
-    final AbstractTaskList incoming(int from, int to) {
-        if (from < 0) {
-            throw new IllegalArgumentException("'from' must be zero or positive.");
-        }
-        if (to <= from) {
-            throw new IllegalArgumentException("'from' must be less than 'to'.");
-        }
-
-        AbstractTaskList incomingTaskList = null;
-
-        /* Creating incomingTaskList based on the child class implementing it. */
-        if (this instanceof ArrayTaskListImpl) {
-            incomingTaskList = new ArrayTaskListImpl();
-        } else if (this instanceof LinkedTaskListImpl) {
-            incomingTaskList = new LinkedTaskListImpl();
-        }
-
-        Stream<Task> stream = this.getStream();
-        stream.filter(task -> IntStream.iterate(task.getStartTime(), task::nextTimeAfter
-        ).limit(
-                !task.isRepeated() ?
-                        1 :
-                        (int) Math.floor((task.getEndTime() - task.getStartTime())/task.getRepeatInterval()) + 1)
-                .anyMatch(repetition -> from < repetition && repetition < to))
-                .forEach(incomingTaskList::add);
-        return incomingTaskList;
-    }
 
     /**
      * Creates a shallow copy of this object.

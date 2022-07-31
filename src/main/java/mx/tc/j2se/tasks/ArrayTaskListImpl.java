@@ -14,7 +14,7 @@ import java.util.stream.StreamSupport;
  * new array of tasks must be created, the size changed accordingly and
  * tasks copied to the new array. Objects of this class can be cloned.</p>
  *
- * @version     6.0 21 July 2022
+ * @version     7.0 30 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class ArrayTaskListImpl extends AbstractTaskList {

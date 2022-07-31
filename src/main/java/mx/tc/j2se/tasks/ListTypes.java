@@ -6,7 +6,7 @@ package mx.tc.j2se.tasks;
  * The linked implementation uses a double linked
  * list of tasks.</p>
  *
- * @version     6.0 21 July 2022
+ * @version     7.0 30 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class ListTypes {

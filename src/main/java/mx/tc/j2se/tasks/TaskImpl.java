@@ -1,4 +1,7 @@
 package mx.tc.j2se.tasks;
+
+import java.time.LocalDateTime;
+
 /**
  * <p>Class for tasks that a user can create, non repetitive and repetitive.</p>
  *
@@ -6,7 +9,7 @@ package mx.tc.j2se.tasks;
  * end time, tell if it's repetitive or not. In the case of a repetitive task,
  * the class provides a method to set and return the interval of the repetition.</p>
  *
- * @version     6.0 21 July 2022
+ * @version     7.0 30 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public class TaskImpl implements Task {
@@ -16,14 +19,14 @@ public class TaskImpl implements Task {
 
     /* The start time of a repetitive task or the execution time
     *  of a non-repetitive task. */
-    private int start;
+    private LocalDateTime start;
 
     /* The end time of a repetitive task. In the case of a non-repetitive task,
     *  coincides with instance variable start. */
-    private int end;
+    private LocalDateTime end;
 
     /* The time between each repetition of a repetitive task */
-    private int interval;
+    private long interval;
 
     /* Indicates if the task is active. */
     private boolean active;
@@ -39,8 +42,7 @@ public class TaskImpl implements Task {
      * @throws IllegalArgumentException if title is not a
      *         String or has zero length or time is negative.
      */
-
-    TaskImpl(String title, int time) {
+    TaskImpl(String title, LocalDateTime time) {
         if (title == null) {
             throw new IllegalArgumentException("title can't be null.");
         }
@@ -48,9 +50,6 @@ public class TaskImpl implements Task {
             throw new IllegalArgumentException("title can't be empty.");
         }
 
-        if (time <= 0) {
-            throw new IllegalArgumentException("time must be positive");
-        }
         this.title = title;
         this.start = time;
         this.active = false;
@@ -65,18 +64,15 @@ public class TaskImpl implements Task {
      *         iii) end is not greater than start, iv) interval
      *         is not positive.
      */
-    TaskImpl(String title, int start, int end, int interval) {
+    TaskImpl(String title, LocalDateTime start, LocalDateTime end, long interval) {
         if (title == null) {
             throw new IllegalArgumentException("title can't be null.");
         }
         if (title.isEmpty()) {
             throw new IllegalArgumentException("title can't be empty.");
         }
-        if (start < 0) {
-            throw new IllegalArgumentException("start must be non-negative.");
-        }
-        if (end <= start) {
-            throw new IllegalArgumentException("end must be greater than start.");
+        if (end.compareTo(start) <= 0) {
+            throw new IllegalArgumentException("end date must be greater than start date.");
         }
         if (interval <= 0) {
             throw new IllegalArgumentException("interval must be positive.");
@@ -110,15 +106,12 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public int getTime() {
+    public LocalDateTime getTime() {
         return this.start;
     }
 
     @Override
-    public void setTime(int time) {
-        if (time < 0) {
-            throw new IllegalArgumentException("time must not be negative.");
-        }
+    public void setTime(LocalDateTime time) {
         if (this.repeated) {
             this.repeated = false;
         }
@@ -127,25 +120,23 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public int getStartTime() {
+    public LocalDateTime getStartTime() {
         return this.start;
     }
 
     @Override
-    public int getEndTime() {
+    public LocalDateTime getEndTime() {
         return this.end;
     }
 
     @Override
-    public int getRepeatInterval() {
+    public long getRepeatInterval() {
         return (!this.repeated ? 0 : this.interval);
     }
 
     @Override
-    public void setTime(int start, int end, int interval) {
-        if (start < 0) {
-            throw new IllegalArgumentException("start must be positive.");
-        } else if (end <= start) {
+    public void setTime(LocalDateTime start, LocalDateTime end, long interval) {
+        if (end.compareTo(start) <= 0) {
             throw new IllegalArgumentException("end must be greater than start.");
         } else if (!(interval > 0)) {
             throw new IllegalArgumentException("interval must be positive.");
@@ -164,26 +155,23 @@ public class TaskImpl implements Task {
     }
 
     @Override
-    public int nextTimeAfter(int current) {
-        if (current < 0) {
-            throw new IllegalArgumentException("current must not be negative.");
+    public LocalDateTime nextTimeAfter(LocalDateTime current) {
+        if ((!this.active) || (this.end.compareTo(current) <= 0)) {
+            return LocalDateTime.MIN;
         }
-        if ((!this.active) || (current > this.end)) {
-            return -1;
-        }
-        if (current < this.start) {
+        if (current.compareTo(this.start) < 0) {
             return this.start;
         }
         if (this.repeated) {
-            int startTimeOfInterval = this.start;
-            while (current >= startTimeOfInterval) {
-                startTimeOfInterval += this.interval;
+            LocalDateTime startTimeOfInterval = this.start;
+            while (startTimeOfInterval.compareTo(current)<=0) {
+                startTimeOfInterval = startTimeOfInterval.plusHours(this.interval);
             }
-            if (startTimeOfInterval <= this.end) {
+            if (startTimeOfInterval.compareTo(this.end) <= 0) {
                 return startTimeOfInterval;
             }
         }
-        return -1;
+        return LocalDateTime.MIN;
     }
 
     @Override
@@ -199,10 +187,10 @@ public class TaskImpl implements Task {
     public String toString() {
         String s;
         if (!this.repeated) {
-            s = String.format("Non-repetitive Task: {title: %s, execution time: %d, active: %s}",
+            s = String.format("Non-repetitive Task: {title: %s, execution time: %s, active: %s}",
                     this.title, this.start, this.active);
         } else {
-            s = String.format("Repetitive Task: {title: %s, start time: %d, end time: %d, interval: %d, active: %s}",
+            s = String.format("Repetitive Task: {title: %s, start time: %s, end time: %s, interval: %d, active: %s}",
                     this.title, this.start, this.end, this.interval, this.active);
         }
         return s;
@@ -236,9 +224,9 @@ public class TaskImpl implements Task {
         Boolean active = this.active;
         Boolean repeated = this.repeated;
         int result = this.title.hashCode();
-        result = 31 * result + this.start;
-        result = 31 * result + this.end;
-        result = 31 * result + this.interval;
+        result = 31 * result + this.start.hashCode();
+        result = 31 * result + this.end.hashCode();
+        result = 31 * result + (int)this.interval;
         result = 31 * result + active.hashCode();
         result = 31 * result + repeated.hashCode();
         return result;

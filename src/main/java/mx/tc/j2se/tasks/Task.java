@@ -1,4 +1,7 @@
 package mx.tc.j2se.tasks;
+
+import java.time.LocalDateTime;
+
 /**
  * <p>Interface for tasks that a user can create, non repetitive and repetitive.</p>
  *
@@ -6,7 +9,7 @@ package mx.tc.j2se.tasks;
  * end time, tell if it's repetitive or not. In the case of a repetitive task,
  * the interface declares a method to set and return the interval of the repetition.</p>
  *
- * @version     6.0 21 June 2022
+ * @version     7.0 30 June 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
 public interface Task extends Cloneable{
@@ -24,7 +27,7 @@ public interface Task extends Cloneable{
     void setTitle(String title);
 
     /** Describes if the task is active.
-     * @return active if the task is active.
+     * @return true if the task is active.
      */
     boolean isActive();
 
@@ -41,7 +44,7 @@ public interface Task extends Cloneable{
      * or not.
      * @return the execution time or the start time.
      */
-    int getTime();
+    LocalDateTime getTime();
 
     /** Sets the execution time for non-repetitive tasks.
      * If the task is repetitive, it set it to
@@ -49,7 +52,7 @@ public interface Task extends Cloneable{
      * @param time the time of execution.
      * @throws IllegalArgumentException if time is negative.
      */
-    void setTime(int time);
+    void setTime(LocalDateTime time);
 
     /**
      * Returns the start time of the repetitive task.
@@ -57,7 +60,7 @@ public interface Task extends Cloneable{
      * execution time.
      * @return start the start time.
      */
-    int getStartTime();
+    LocalDateTime getStartTime();
 
     /**
      * Returns the end time of the repetitive task.
@@ -65,7 +68,7 @@ public interface Task extends Cloneable{
      * execution time.
      * @return end the end time.
      */
-    int getEndTime();
+    LocalDateTime getEndTime();
 
     /**
      * Returns the interval (span of time) of the
@@ -73,7 +76,7 @@ public interface Task extends Cloneable{
      * returns 0.
      * @return interval the interval of the task.
      */
-    int getRepeatInterval();
+    long getRepeatInterval();
 
     /**
      * Defines the start time, the end time, and the interval
@@ -86,11 +89,11 @@ public interface Task extends Cloneable{
      *         ii) start is greater or equal than end or
      *         iii) or interval is not positive.
      */
-    void setTime(int start, int end, int interval);
+    void setTime(LocalDateTime start, LocalDateTime end, long interval);
 
     /**
      * Indicates if the task is repetitive.
-     * @return repeated if the task is repetitive.
+     * @return true if the task is repetitive.
      */
     boolean isRepeated();
 
@@ -110,7 +113,7 @@ public interface Task extends Cloneable{
      * @return the time of the next task (repetition) or -1 otherwise.
      * @throws IllegalArgumentException if current is negative.
      */
-    int nextTimeAfter(int current);
+    LocalDateTime nextTimeAfter(LocalDateTime current);
 
     /**
      * Creates a shallow copy of this object.
