@@ -1,5 +1,6 @@
 package mx.tc.j2se.tasks;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Arrays;
@@ -17,7 +18,9 @@ import java.util.stream.StreamSupport;
  * @version     7.0 30 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
-public class ArrayTaskListImpl extends AbstractTaskList {
+public class ArrayTaskListImpl extends AbstractTaskList implements Serializable{
+    private static final long serialVersionUID = 434587L;
+
     /* An array of tasks */
     Task[] taskList;
 

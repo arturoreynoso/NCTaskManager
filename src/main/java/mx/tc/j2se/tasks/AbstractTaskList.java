@@ -1,7 +1,5 @@
 package mx.tc.j2se.tasks;
 
-import java.util.Optional;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -13,7 +11,9 @@ import java.util.stream.Stream;
  * @version     7.0 30 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
-public abstract class AbstractTaskList implements Iterable<Task>, Cloneable {
+public abstract class AbstractTaskList implements Iterable<Task>, Cloneable{
+    protected AbstractTaskList(){}
+
     /**
      * Adds the specified task to the list.
      * @param task a task to be added to the list.

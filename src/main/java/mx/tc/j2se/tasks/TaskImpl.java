@@ -1,6 +1,7 @@
 package mx.tc.j2se.tasks;
 
 import java.time.LocalDateTime;
+import java.io.Serializable;
 
 /**
  * <p>Class for tasks that a user can create, non repetitive and repetitive.</p>
@@ -12,8 +13,9 @@ import java.time.LocalDateTime;
  * @version     7.0 30 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
-public class TaskImpl implements Task {
+public class TaskImpl implements Task, Serializable{
 
+    private static final long serialVersionUID = 789347L;
     /* The title of the task */
     private String title;
 
@@ -35,7 +37,9 @@ public class TaskImpl implements Task {
     private boolean repeated;
 
     /* Empty constructor. */
-    public TaskImpl() {}
+    public TaskImpl() {
+        super();
+    }
 
     /**
      * Constructor for non-repetitive tasks.

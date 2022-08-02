@@ -1,5 +1,6 @@
 package mx.tc.j2se.tasks;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,7 +15,8 @@ import java.util.stream.StreamSupport;
  * @version     7.0 30 July 2022
  * @author      Arturo Yitzack Reynoso Sánchez
  */
-public class LinkedTaskListImpl extends AbstractTaskList{
+public class LinkedTaskListImpl extends AbstractTaskList implements Serializable {
+    private static final long serialVersionUID = 234873L;
 
     /* Private inner class of nodes. */
     private class Node {

@@ -5,7 +5,7 @@ import java.util.SortedMap;
 import java.util.stream.IntStream;
 
 public class Main {
-	public static void main(String[] args) throws CloneNotSupportedException {
+	public static void main(String[] args) {
 		//System.out.println("Hello Training Center!");
 
 		Task task = new TaskImpl("Trotar por las mañanas",
@@ -37,10 +37,12 @@ public class Main {
 		taskList.add(task4);
 		taskList.add(task5);
 
-		SortedMap<LocalDateTime, Set<Task>> calendar = Tasks.calendar(taskList,
+		/*SortedMap<LocalDateTime, Set<Task>> calendar = Tasks.calendar(taskList,
 				LocalDateTime.of(2017, 2, 13, 8,0),
 				LocalDateTime.of(2017, 3, 27, 9,0));
-		System.out.println(calendar);
+		System.out.println(calendar);*/
+		System.out.println(taskList.getClass());
+		System.out.println("HOLA");
 
 		/*
 		AbstractTaskList taskList1 = TaskListFactory.createTaskList(ListTypes.types.ARRAY);
